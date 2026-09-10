@@ -10,7 +10,7 @@ class NgramFeatureSelector(BaseEstimator, TransformerMixin):
 
     def __init__(self, top_k: int = 100):
         self.top_k: int = top_k
-        self.selected_tokens_: Optional[List[str]] = None
+        self.selected_tokens_: Optional[List[str]] = None 
 
     def fit(self, X: Any, y: Optional[Any] = None):
         # X is an iterable of token lists
@@ -31,12 +31,13 @@ class NgramFeatureSelector(BaseEstimator, TransformerMixin):
 
         return self
 
-    def transform(self, X: Any):
+    def transform(self, X: Any, y: Optional[Any] = None):
         if self.selected_tokens_ is None:
             return X
         selected = set(self.selected_tokens_)
         # Keep original structure: list of tokens per sample
-        return [[token for token in (tokens or []) if token in selected] for tokens in X]
+        selected_tokens = {token for ngram in selected for token in ngram.split()}
+        return [[token for token in (tokens or []) if token in selected_tokens] for tokens in X]
 
 
 class SequenceVectorizer(BaseEstimator, TransformerMixin):
